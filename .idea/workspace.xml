@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d06f5429-e35f-4e27-96fc-728b1bc2df38" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test7870.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/teststop.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CsvToExcelGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/CsvToExcelGUI.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,9 +22,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2oh67T0XN0TZQ5miRTrdAK4zDeM" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -36,21 +33,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.CsvToExcelCommandLine.executor": "Run",
-    "Python.CsvToExcelGUI (1).executor": "Run",
-    "Python.te.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.test3.executor": "Run",
-    "Python.test6.executor": "Run",
-    "Python.test7870.executor": "Run",
-    "Python.teststop.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CsvToExcelCommandLine.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CsvToExcelGUI (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.te.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test6.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test7870.executor&quot;: &quot;Run&quot;,
+    &quot;Python.teststop.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Python.test7870">
+}</component>
+  <component name="RunManager" selected="Python.CsvToExcelGUI (1)">
     <configuration name="CsvToExcelGUI (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CSVtoExcelGui" />
       <option name="ENV_FILES" value="" />
@@ -163,8 +160,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test7870" />
         <item itemvalue="Python.CsvToExcelGUI (1)" />
+        <item itemvalue="Python.test7870" />
         <item itemvalue="Python.teststop" />
         <item itemvalue="Python.test6" />
         <item itemvalue="Python.test3" />
