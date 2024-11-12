@@ -7,14 +7,33 @@ from ttkthemes import ThemedTk
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 import threading
+import logging
+
+# Configure logging
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 def select_csv_file():
-    file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
-    csv_file_path.set(file_path)
+    try:
+        file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        csv_file_path.set(file_path)
+        logging.info(f'Selected CSV file: {file_path}')
+    except Exception as e:
+        logging.error(f'Error selecting CSV file: {e}')
+
 
 def select_output_dir():
-    dir_path = filedialog.askdirectory()
-    output_dir_path.set(dir_path)
+    try:
+        dir_path = filedialog.askdirectory()
+        output_dir_path.set(dir_path)
+        logging.info(f'Selected output directory: {dir_path}')
+    except Exception as e:
+        logging.error(f'Error selecting output directory: {e}')
+
 
 def adjust_column_widths(ws):
     for col in ws.columns:
@@ -22,22 +41,29 @@ def adjust_column_widths(ws):
         col_letter = get_column_letter(col[0].column)
         ws.column_dimensions[col_letter].width = max_length + 2
 
+
 def convert_csv_to_excel():
+    logging.info('Starting CSV to Excel conversion')
     status_label_var.set("Converting...")
+    convert_button.config(state="disabled")
     root.update_idletasks()
 
     file_path = csv_file_path.get()
     output_dir = output_dir_path.get()
-    output_file_name = name_entry.get()
-    output_file = os.path.join(output_dir, f"{output_file_name}.xlsx")
-    split_into_sheets = split_checkbox_var.get()
+    output_file_name = name_entry.get().strip()
 
     if not file_path or not output_dir or not output_file_name:
         messagebox.showerror("Error", "Please complete all fields.")
+        logging.warning('Conversion failed: Missing fields')
+        convert_button.config(state="normal")
         return
+
+    output_file = os.path.join(output_dir, f"{output_file_name}.xlsx")
 
     if not file_path.lower().endswith('.csv'):
         messagebox.showerror("Error", "The selected file is not in CSV format.")
+        logging.warning('Conversion failed: File is not CSV')
+        convert_button.config(state="normal")
         return
 
     try:
@@ -54,22 +80,24 @@ def convert_csv_to_excel():
 
             sheet_index = 1
             with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-                if not split_into_sheets:
+                if not split_checkbox_var.get():
                     chunk = pd.read_csv(file, delimiter=dialect.delimiter)
                     chunk.to_excel(writer, index=False, sheet_name='Sheet1')
                     progress_bar['value'] = 100
                     root.update_idletasks()
                 else:
                     for i, chunk in enumerate(pd.read_csv(file, delimiter=dialect.delimiter, chunksize=chunk_size)):
-                        startrow = 0 if writer.sheets.get(f'Sheet{sheet_index}') is None else writer.sheets[f'Sheet{sheet_index}'].max_row
+                        startrow = 0 if writer.sheets.get(f'Sheet{sheet_index}') is None else writer.sheets[
+                            f'Sheet{sheet_index}'].max_row
 
                         if startrow + len(chunk) > 1048576:
                             sheet_index += 1
                             startrow = 0
 
                         sheet_name = f'Sheet{sheet_index}'
-                        chunk.to_excel(writer, index=False, header=writer.sheets.get(sheet_name) is None, startrow=startrow, sheet_name=sheet_name)
-                        progress_bar['value'] = (i + 1) * 50 / num_chunks
+                        chunk.to_excel(writer, index=False, header=writer.sheets.get(sheet_name) is None,
+                                       startrow=startrow, sheet_name=sheet_name)
+                        progress_bar['value'] = (i + 1) * 100 / num_chunks
                         root.update_idletasks()
 
             status_label_var.set("Adjusting columns...")
@@ -85,19 +113,26 @@ def convert_csv_to_excel():
             wb.save(output_file)
             status_label_var.set("Completed")
             progress_bar['value'] = 100
+            logging.info(f'Conversion completed successfully, output saved to {output_file}')
             messagebox.showinfo("Success", f"Conversion complete. File saved as {output_file}")
 
     except Exception as e:
+        logging.error(f'Error during conversion: {e}')
         messagebox.showerror("Error", f"An error occurred: {e}")
         status_label_var.set("Error")
-        progress_bar['value'] = 0
+
+    finally:
+        convert_button.config(state="normal")
+
 
 def start_conversion_thread():
     threading.Thread(target=convert_csv_to_excel, daemon=True).start()
 
+
 def on_closing():
     root.quit()
     root.destroy()
+
 
 # Setup GUI
 root = ThemedTk(theme="winnative")
@@ -135,31 +170,35 @@ split_checkbox_var = BooleanVar()
 main_frame = Frame(root, padding=(20, 20))
 main_frame.pack(fill="both", expand=True)
 
+# Configure grid columns
+main_frame.grid_columnconfigure(1, weight=1)
+
 # Các thành phần giao diện
-Label(main_frame, text="Select CSV file:").grid(row=0, column=0, sticky="w", pady=5)
+Label(main_frame, text="Select CSV file:").grid(row=0, column=0, sticky="w", pady=5, padx=5)
 csv_entry = Entry(main_frame, textvariable=csv_file_path, width=50)
-csv_entry.grid(row=0, column=1, padx=10, pady=5)
-Button(main_frame, text="Browse", command=select_csv_file).grid(row=0, column=2, padx=10)
+csv_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+Button(main_frame, text="Browse", command=select_csv_file).grid(row=0, column=2, padx=5, pady=5)
 
-Label(main_frame, text="Select output directory:").grid(row=1, column=0, sticky="w", pady=5)
+Label(main_frame, text="Select output directory:").grid(row=1, column=0, sticky="w", pady=5, padx=5)
 dir_entry = Entry(main_frame, textvariable=output_dir_path, width=50)
-dir_entry.grid(row=1, column=1, padx=10, pady=5)
-Button(main_frame, text="Browse", command=select_output_dir).grid(row=1, column=2, padx=10)
+dir_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+Button(main_frame, text="Browse", command=select_output_dir).grid(row=1, column=2, padx=5, pady=5)
 
-Label(main_frame, text="Enter Excel file name (without extension):").grid(row=2, column=0, sticky="w", pady=5)
+Label(main_frame, text="Enter Excel file name (without extension):").grid(row=2, column=0, sticky="w", pady=5, padx=5)
 name_entry = Entry(main_frame, width=50)
-name_entry.grid(row=2, column=1, padx=10, pady=5)
+name_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
 
 split_checkbox = Checkbutton(main_frame, text="Split CSV into multiple sheets (if needed)", variable=split_checkbox_var)
 split_checkbox.grid(row=3, column=1, pady=10, sticky="w")
 
-Button(main_frame, text="Convert to Excel", command=start_conversion_thread).grid(row=4, column=1, pady=20)
+convert_button = Button(main_frame, text="Convert to Excel", command=start_conversion_thread)
+convert_button.grid(row=4, column=1, pady=20)
 
 status_label = Label(main_frame, textvariable=status_label_var, font=("Arial", 10))
 status_label.grid(row=5, column=1, pady=5)
 
 progress_bar = Progressbar(main_frame, orient="horizontal", length=300, mode="determinate")
-progress_bar.grid(row=6, column=1, pady=10)
+progress_bar.grid(row=6, column=1, pady=10, sticky="ew")
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
